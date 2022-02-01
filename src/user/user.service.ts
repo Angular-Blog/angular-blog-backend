@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from './user.model';
 import { Sequelize } from 'sequelize-typescript';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -23,8 +24,51 @@ export class UserService {
     });
   }
 
-  async remove(id: string): Promise<void> {
-    const user = await this.findOne(id);
-    await user.destroy();
+  async remove(id: string): Promise<string> {
+    try {
+      const user = await this.userModel.findOne({
+        where: {
+          id,
+        },
+      });
+      await user.destroy();
+      return `User ${id} deleted`;
+    } catch (error) {
+      return `User unable to be deleted. Error: ${error}`;
+    }
+  }
+
+  async add(username: string, password: string, email: string): Promise<User> {
+    try {
+      let user: User;
+      await this.sequelize.transaction(async (t) => {
+        const transactionHost = { transaction: t };
+        user = await this.userModel.create(
+          {
+            username: username,
+            password: await bcrypt.hash(password, 10),
+            email: email,
+          },
+          transactionHost,
+        );
+      });
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async login(email: string, password: string): Promise<boolean> {
+    try {
+      console.log(email);
+      const user = await this.userModel.findOne({
+        where: {
+          email,
+        },
+      });
+      return await bcrypt.compare(password, user.password);
+    } catch (error) {
+      throw error;
+    }
   }
 }
