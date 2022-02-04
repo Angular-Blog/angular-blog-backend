@@ -23,8 +23,36 @@ export class PostService {
     });
   }
 
-  async remove(id: string): Promise<void> {
-    const post = await this.findOne(id);
-    await post.destroy();
+  async remove(id: string): Promise<string> {
+    try {
+      const post = await this.postModel.findOne({
+        where: {
+          id,
+        },
+      });
+      await post.destroy();
+      return `Post ${id} deleted`;
+    } catch (error) {
+      return `Post unable to be deleted. Error: ${error}`;
+    }
+  }
+
+  async add(text: string, userId: string): Promise<Post> {
+    try {
+      let post: Post;
+      await this.sequelize.transaction(async (t) => {
+        const transactionHost = { transaction: t };
+        post = await this.postModel.create(
+          {
+            text: text,
+            userId: userId,
+          },
+          transactionHost,
+        );
+      });
+      return post;
+    } catch (error) {
+      throw error;
+    }
   }
 }

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from './user.model';
+import { Post } from '../post/post.model';
 import { Sequelize } from 'sequelize-typescript';
 import * as bcrypt from 'bcrypt';
 
@@ -21,6 +22,7 @@ export class UserService {
       where: {
         id,
       },
+      include: Post,
     });
   }
 

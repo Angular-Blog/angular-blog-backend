@@ -12,12 +12,12 @@ import { v4 as uuidv4 } from 'uuid';
 export class Post extends Model {
   @Column({ defaultValue: uuidv4, primaryKey: true })
   id: string;
-  @Column
+  @Column({ allowNull: false })
   text: string;
-  @Column
+  @Column({ defaultValue: 0 })
   likes: number;
   @ForeignKey(() => User)
-  @Column
+  @Column({ allowNull: false })
   userId: string;
   @BelongsTo(() => User)
   user: User;

@@ -19,12 +19,14 @@ export class UserController {
     @Body('username') username: string,
     @Body('password') password: string,
     @Body('email') email: string,
-  ): Promise<string> {
+  ): Promise<User> {
     try {
       const user = await this.userService.add(username, password, email);
-      return `User ${user.username} Created with ID ${user.id}`;
+      return user;
+      // return `User ${user.username} Created with ID ${user.id}`;
     } catch (error) {
-      return `Unable to Create User: ${error}`;
+      console.log(error);
+      throw error;
     }
   }
   @Post('login')
