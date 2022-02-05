@@ -1,5 +1,6 @@
 import { Column, Table, Model, HasMany } from 'sequelize-typescript';
 import { Post } from '../post/post.model';
+import { Comment } from '../comment/comment.model';
 import { v4 as uuidv4 } from 'uuid';
 
 @Table
@@ -14,4 +15,6 @@ export class User extends Model {
   password: string;
   @HasMany(() => Post)
   posts: Post[];
+  @HasMany(() => Comment)
+  comments: Comment[];
 }
