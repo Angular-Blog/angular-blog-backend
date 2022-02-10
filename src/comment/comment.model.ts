@@ -15,6 +15,8 @@ export class Comment extends Model {
   id: string;
   @Column({ allowNull: false, unique: true })
   text: string;
+  @Column({ defaultValue: 0 })
+  likes: number;
   @ForeignKey(() => User)
   @Column({ allowNull: false })
   userId: string;
