@@ -1,0 +1,30 @@
+{
+    "userData": [
+        {
+            "username": "TestUser1",
+            "password": "password1",
+            "email": "test1@gmail.com",
+            "id": "1"
+        },
+        {
+            "username": "TestUser2",
+            "password": "password2",
+            "email": "test2@gmail.com"
+        },
+        {
+            "username": "TestUser3",
+            "password": "password3",
+            "email": "test3@gmail.com"
+        },
+        {
+            "username": "TestUser4",
+            "password": "password4",
+            "email": "test4@gmail.com"
+        },
+        {
+            "username": "TestUser5",
+            "password": "password5",
+            "email": "test5@gmail.com"
+        }
+    ]
+}
