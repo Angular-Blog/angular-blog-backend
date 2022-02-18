@@ -4,9 +4,11 @@ import {
   Model,
   BelongsTo,
   ForeignKey,
+  BelongsToMany,
 } from 'sequelize-typescript';
 import { Post } from '../post/post.model';
 import { User } from '../user/user.model';
+import { CommentLike } from '../commentLike/commentLike.model';
 import { v4 as uuidv4 } from 'uuid';
 
 @Table
@@ -27,4 +29,6 @@ export class Comment extends Model {
   postId: string;
   @BelongsTo(() => Post)
   post: Post;
+  @BelongsToMany(() => User, () => CommentLike)
+  likers: User[];
 }

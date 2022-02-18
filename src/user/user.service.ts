@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from './user.model';
 import { Post } from '../post/post.model';
+import { Comment } from '../comment/comment.model';
 import { Sequelize } from 'sequelize-typescript';
 import * as bcrypt from 'bcrypt';
 
@@ -25,6 +26,7 @@ export class UserService {
       include: [
         { model: Post, as: 'posts' },
         { model: Post, as: 'likedPosts' },
+        { model: Comment, as: 'likedComments' },
       ],
     });
   }

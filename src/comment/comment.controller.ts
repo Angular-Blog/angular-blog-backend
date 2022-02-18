@@ -28,6 +28,17 @@ export class CommentController {
       throw error;
     }
   }
+  @Post('like')
+  async submitLike(
+    @Body('userId') userId: string,
+    @Body('commentId') commentId: string,
+  ): Promise<string> {
+    try {
+      return this.commentService.submitLike(userId, commentId);
+    } catch (error) {
+      throw error;
+    }
+  }
   @Post('seedRandom')
   async seedRandom(
     @Body('commentData') commentData: string[],
