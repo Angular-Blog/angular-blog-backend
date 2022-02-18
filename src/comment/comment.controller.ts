@@ -1,8 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { Comment } from './comment.model';
-import { User } from '../user/user.model';
-import { Post as PostModel } from '../post/post.model';
 
 @Controller('comments')
 export class CommentController {
@@ -27,6 +25,17 @@ export class CommentController {
       return comment;
     } catch (error) {
       console.log(error);
+      throw error;
+    }
+  }
+  @Post('like')
+  async submitLike(
+    @Body('userId') userId: string,
+    @Body('commentId') commentId: string,
+  ): Promise<string> {
+    try {
+      return this.commentService.submitLike(userId, commentId);
+    } catch (error) {
       throw error;
     }
   }

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Post } from './post.model';
 import { User } from '../user/user.model';
+import { PostLike } from '../postLike/postLike.model';
 import { Comment } from '../comment/comment.model';
 import { Sequelize } from 'sequelize-typescript';
 
@@ -12,6 +13,8 @@ export class PostService {
     private postModel: typeof Post,
     @InjectModel(User)
     private userModel: typeof User,
+    @InjectModel(PostLike)
+    private postLikeModel: typeof PostLike,
     private sequelize: Sequelize,
   ) {}
 
@@ -80,6 +83,49 @@ export class PostService {
         });
       });
       return postList;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async submitLike(userId: string, postId: string): Promise<string> {
+    try {
+      const likedPost = await this.postModel.findOne({
+        where: {
+          id: postId,
+        },
+      });
+      const userLikes = await this.postLikeModel.findAll({
+        where: {
+          userId: userId,
+        },
+      });
+      let existingLike = false;
+      userLikes.forEach(async (like) => {
+        if (like.postId === postId) {
+          existingLike = true;
+          likedPost.likes -= 1;
+          await like.destroy();
+          await likedPost.save();
+        }
+      });
+      if (existingLike) {
+        return `Post ${postId} unliked by ${userId}`;
+      } else {
+        likedPost.likes += 1;
+        await likedPost.save();
+        await this.sequelize.transaction(async (t) => {
+          const transactionHost = { transaction: t };
+          await this.postLikeModel.create(
+            {
+              userId: userId,
+              postId: postId,
+            },
+            transactionHost,
+          );
+        });
+        return `Post ${postId} liked by ${userId}`;
+      }
     } catch (error) {
       throw error;
     }
