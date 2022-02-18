@@ -26,6 +26,17 @@ export class PostController {
       return `Unable to Create Post: ${error}`;
     }
   }
+  @Post('like')
+  async submitLike(
+    @Body('userId') userId: string,
+    @Body('postId') postId: string,
+  ): Promise<string> {
+    try {
+      return this.postService.submitLike(userId, postId);
+    } catch (error) {
+      throw error;
+    }
+  }
   @Post('seedRandom')
   async seedRandom(@Body('postData') postData: string[]): Promise<PostModel[]> {
     return this.postService.seedRandom(postData);

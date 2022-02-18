@@ -22,7 +22,10 @@ export class UserService {
       where: {
         id,
       },
-      include: Post,
+      include: [
+        { model: Post, as: 'posts' },
+        { model: Post, as: 'likedPosts' },
+      ],
     });
   }
 

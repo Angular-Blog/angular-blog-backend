@@ -1,6 +1,13 @@
-import { Column, Table, Model, HasMany } from 'sequelize-typescript';
+import {
+  Column,
+  Table,
+  Model,
+  HasMany,
+  BelongsToMany,
+} from 'sequelize-typescript';
 import { Post } from '../post/post.model';
 import { Comment } from '../comment/comment.model';
+import { PostLike } from '../postLike/postLike.model';
 import { v4 as uuidv4 } from 'uuid';
 
 @Table
@@ -17,7 +24,7 @@ export class User extends Model {
   posts: Post[];
   @HasMany(() => Comment)
   comments: Comment[];
-  @HasMany(() => Post)
+  @BelongsToMany(() => Post, () => PostLike)
   likedPosts: Post[];
   @HasMany(() => Comment)
   likedComments: Comment[];
