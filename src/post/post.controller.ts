@@ -1,23 +1,23 @@
-import * as nest from '@nestjs/common';
+import { Get, Post, Delete, Controller, Body, Param } from '@nestjs/common';
 import { PostService } from './post.service';
-import { Post } from './post.model';
+import { Post as PostModel } from './post.model';
 
-@nest.Controller('posts')
+@Controller('posts')
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
-  @nest.Get()
-  getPosts(): Promise<Post[]> {
+  @Get()
+  getPosts(): Promise<PostModel[]> {
     return this.postService.findAll();
   }
-  @nest.Get(':id')
-  getPost(@nest.Param('id') id: string): Promise<Post> {
+  @Get(':id')
+  getPost(@Param('id') id: string): Promise<PostModel> {
     return this.postService.findOne(id);
   }
-  @nest.Post()
+  @Post()
   async createPost(
-    @nest.Body('text') text: string,
-    @nest.Body('userId') userId: string,
+    @Body('text') text: string,
+    @Body('userId') userId: string,
   ): Promise<string> {
     try {
       const post = await this.postService.add(text, userId);
@@ -26,12 +26,12 @@ export class PostController {
       return `Unable to Create Post: ${error}`;
     }
   }
-  @nest.Post('seed')
-  async seedRandom(@nest.Body('postData') postData: string[]): Promise<Post[]> {
+  @Post('seedRandom')
+  async seedRandom(@Body('postData') postData: string[]): Promise<PostModel[]> {
     return this.postService.seedRandom(postData);
   }
-  @nest.Delete(':id')
-  deletePost(@nest.Param('id') id: string): Promise<string> {
+  @Delete(':id')
+  deletePost(@Param('id') id: string): Promise<string> {
     const postId = this.postService.remove(id);
     return postId;
   }

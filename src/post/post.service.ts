@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Post } from './post.model';
-import { Comment } from '../comment/comment.model';
 import { User } from '../user/user.model';
+import { Comment } from '../comment/comment.model';
 import { Sequelize } from 'sequelize-typescript';
 
 @Injectable()
