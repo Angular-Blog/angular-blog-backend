@@ -13,7 +13,7 @@ import { v4 as uuidv4 } from 'uuid';
 export class Comment extends Model {
   @Column({ defaultValue: uuidv4, primaryKey: true })
   id: string;
-  @Column({ allowNull: false, unique: true })
+  @Column({ allowNull: false })
   text: string;
   @Column({ defaultValue: 0 })
   likes: number;

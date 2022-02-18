@@ -1,6 +1,8 @@
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { Comment } from './comment.model';
+import { User } from '../user/user.model';
+import { Post as PostModel } from '../post/post.model';
 
 @Controller('comments')
 export class CommentController {
@@ -27,6 +29,12 @@ export class CommentController {
       console.log(error);
       throw error;
     }
+  }
+  @Post('seedRandom')
+  async seedRandom(
+    @Body('commentData') commentData: string[],
+  ): Promise<Comment[]> {
+    return this.commentService.seedRandom(commentData);
   }
   @Delete(':id')
   deleteUser(@Param('id') id: string): Promise<string> {

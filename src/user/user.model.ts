@@ -17,4 +17,8 @@ export class User extends Model {
   posts: Post[];
   @HasMany(() => Comment)
   comments: Comment[];
+  @HasMany(() => Post)
+  likedPosts: Post[];
+  @HasMany(() => Comment)
+  likedComments: Comment[];
 }
