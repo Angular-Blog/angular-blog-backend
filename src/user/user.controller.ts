@@ -14,6 +14,10 @@ export class UserController {
   getUser(@Param('id') id: string): Promise<User> {
     return this.userService.findOne(id);
   }
+  @Post('seedAll')
+  seedAll(@Body('userData') userData: User[]): Promise<User[]> {
+    return this.userService.seedAll(userData);
+  }
   @Post()
   async createUser(
     @Body('username') username: string,

@@ -73,4 +73,27 @@ export class UserService {
       throw error;
     }
   }
+
+  async seedAll(data: User[]): Promise<User[]> {
+    try {
+      const userList = [];
+      data.forEach(async (user: User) => {
+        await this.sequelize.transaction(async (t) => {
+          const transactionHost = { transaction: t };
+          const seededUser = await this.userModel.create(
+            {
+              username: user.username,
+              password: await bcrypt.hash(user.password, 10),
+              email: user.email,
+            },
+            transactionHost,
+          );
+          userList.push(seededUser);
+        });
+      });
+      return userList;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

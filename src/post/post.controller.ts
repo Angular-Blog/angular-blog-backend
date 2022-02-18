@@ -26,6 +26,10 @@ export class PostController {
       return `Unable to Create Post: ${error}`;
     }
   }
+  @nest.Post('seed')
+  async seedRandom(@nest.Body('postData') postData: string[]): Promise<Post[]> {
+    return this.postService.seedRandom(postData);
+  }
   @nest.Delete(':id')
   deletePost(@nest.Param('id') id: string): Promise<string> {
     const postId = this.postService.remove(id);
