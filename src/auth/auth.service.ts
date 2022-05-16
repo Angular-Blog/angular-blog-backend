@@ -1,11 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
-import {
-  LoginCredentials,
-  RegistrationCredentials,
-  RegistrationStatus,
-} from './authmodels';
+import { LoginCredentials, RegistrationCredentials } from './authmodels';
 import { JwtPayload } from './jwtpayload';
 import { User } from 'src/user/user.model';
 

@@ -1,8 +1,3 @@
-export interface RegistrationStatus {
-  success: boolean;
-  message: string;
-}
-
 export interface RegistrationCredentials {
   email: string;
   username: string;

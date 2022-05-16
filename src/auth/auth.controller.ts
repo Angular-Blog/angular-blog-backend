@@ -1,16 +1,6 @@
-import {
-  Body,
-  Controller,
-  HttpException,
-  HttpStatus,
-  Post,
-} from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import {
-  LoginCredentials,
-  RegistrationCredentials,
-  RegistrationStatus,
-} from './authmodels';
+import { LoginCredentials, RegistrationCredentials } from './authmodels';
 
 @Controller('auth')
 export class AuthController {
