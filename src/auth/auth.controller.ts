@@ -19,14 +19,8 @@ export class AuthController {
   @Post('register')
   public async register(
     @Body() credentials: RegistrationCredentials,
-  ): Promise<RegistrationStatus> {
-    const result: RegistrationStatus = await this.authService.register(
-      credentials,
-    );
-    if (!result.success) {
-      throw new HttpException(result.message, HttpStatus.BAD_REQUEST);
-    }
-    return result;
+  ): Promise<any> {
+    return await this.authService.register(credentials);
   }
 
   @Post('login')

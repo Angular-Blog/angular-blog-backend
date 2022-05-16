@@ -16,22 +16,14 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async register(
-    credentials: RegistrationCredentials,
-  ): Promise<RegistrationStatus> {
-    let status: RegistrationStatus = {
-      success: true,
-      message: 'user registered',
+  async register(credentials: RegistrationCredentials): Promise<any> {
+    await this.userService.add(credentials);
+    const user = await this.userService.findByPayload(credentials.username);
+    const token = this._createToken(user);
+    return {
+      username: user.username,
+      ...token,
     };
-    try {
-      await this.userService.add(credentials);
-    } catch (err) {
-      status = {
-        success: false,
-        message: err,
-      };
-    }
-    return status;
   }
 
   async login(credentials: LoginCredentials): Promise<any> {

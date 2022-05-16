@@ -35,7 +35,6 @@ export class UserService {
   async findByLogin(creds: LoginCredentials): Promise<User> {
     const { email, password } = creds;
     try {
-      console.log(email);
       const user = await this.userModel.findOne({
         where: {
           email,
@@ -45,7 +44,6 @@ export class UserService {
         throw new HttpException('User Not Found', HttpStatus.UNAUTHORIZED);
       }
       const validPassword = await bcrypt.compare(password, user.password);
-      console.log(validPassword);
       if (!validPassword) {
         throw new HttpException('Invalid Credentials', HttpStatus.UNAUTHORIZED);
       }
@@ -55,7 +53,7 @@ export class UserService {
     }
   }
 
-  async findByPayload({ username }: any): Promise<User> {
+  async findByPayload(username: any): Promise<User> {
     return await this.userModel.findOne({
       where: {
         username,
@@ -93,15 +91,28 @@ export class UserService {
         );
       });
       return user;
-    } catch (error) {
-      throw error;
+    } catch (err) {
+      const error = err.errors[0].message || '';
+      switch (error) {
+        case 'username must be unique':
+          throw new HttpException(
+            'Username already in use',
+            HttpStatus.BAD_REQUEST,
+          );
+        case 'email must be unique':
+          throw new HttpException(
+            'Email already in use',
+            HttpStatus.BAD_REQUEST,
+          );
+        default:
+          throw new HttpException('Registration error', HttpStatus.BAD_REQUEST);
+      }
     }
   }
 
   async login(creds: LoginCredentials): Promise<User> {
     const { email, password } = creds;
     try {
-      console.log(email);
       const user = await this.userModel.findOne({
         where: {
           email,
