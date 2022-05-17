@@ -1,13 +1,25 @@
-import { Get, Post, Delete, Controller, Body, Param } from '@nestjs/common';
+import {
+  Get,
+  Post,
+  Delete,
+  Controller,
+  Body,
+  Param,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
 import { PostService } from './post.service';
 import { Post as PostModel } from './post.model';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('posts')
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
   @Get()
-  getPosts(): Promise<PostModel[]> {
+  @UseGuards(AuthGuard())
+  getPosts(@Req() req: any): Promise<PostModel[]> {
+    console.log(req);
     return this.postService.findAll();
   }
   @Get(':id')

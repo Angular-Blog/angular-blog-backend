@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from './user.model';
 import { Post } from '../post/post.model';
 import { Comment } from '../comment/comment.model';
 import { Sequelize } from 'sequelize-typescript';
 import * as bcrypt from 'bcrypt';
+import { LoginCredentials, RegistrationCredentials } from 'src/auth/authmodels';
 
 @Injectable()
 export class UserService {
@@ -18,7 +19,7 @@ export class UserService {
     return this.userModel.findAll();
   }
 
-  findOne(id: string): Promise<User> {
+  findById(id: string): Promise<User> {
     return this.userModel.findOne({
       where: {
         id,
@@ -28,6 +29,35 @@ export class UserService {
         { model: Post, as: 'likedPosts' },
         { model: Comment, as: 'likedComments' },
       ],
+    });
+  }
+
+  async findByLogin(creds: LoginCredentials): Promise<User> {
+    const { email, password } = creds;
+    try {
+      const user = await this.userModel.findOne({
+        where: {
+          email,
+        },
+      });
+      if (!user) {
+        throw new HttpException('User Not Found', HttpStatus.UNAUTHORIZED);
+      }
+      const validPassword = await bcrypt.compare(password, user.password);
+      if (!validPassword) {
+        throw new HttpException('Invalid Credentials', HttpStatus.UNAUTHORIZED);
+      }
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async findByPayload(username: any): Promise<User> {
+    return await this.userModel.findOne({
+      where: {
+        username,
+      },
     });
   }
 
@@ -41,11 +71,12 @@ export class UserService {
       await user.destroy();
       return `User ${id} deleted`;
     } catch (error) {
-      return `User unable to be deleted. Error: ${error}`;
+      throw `User unable to be deleted. Error: ${error}`;
     }
   }
 
-  async add(username: string, password: string, email: string): Promise<User> {
+  async add(creds: RegistrationCredentials): Promise<User> {
+    const { username, password, email } = creds;
     try {
       let user: User;
       await this.sequelize.transaction(async (t) => {
@@ -60,20 +91,41 @@ export class UserService {
         );
       });
       return user;
-    } catch (error) {
-      throw error;
+    } catch (err) {
+      const error = err.errors[0].message || '';
+      switch (error) {
+        case 'username must be unique':
+          throw new HttpException(
+            'Username already in use',
+            HttpStatus.BAD_REQUEST,
+          );
+        case 'email must be unique':
+          throw new HttpException(
+            'Email already in use',
+            HttpStatus.BAD_REQUEST,
+          );
+        default:
+          throw new HttpException('Registration error', HttpStatus.BAD_REQUEST);
+      }
     }
   }
 
-  async login(email: string, password: string): Promise<boolean> {
+  async login(creds: LoginCredentials): Promise<User> {
+    const { email, password } = creds;
     try {
-      console.log(email);
       const user = await this.userModel.findOne({
         where: {
           email,
         },
       });
-      return await bcrypt.compare(password, user.password);
+      if (!user) {
+        throw new HttpException('User Not Found', HttpStatus.UNAUTHORIZED);
+      }
+      const validPassword = bcrypt.compare(password, user.password);
+      if (!validPassword) {
+        throw new HttpException('Invalid Credentials', HttpStatus.UNAUTHORIZED);
+      }
+      return user;
     } catch (error) {
       throw error;
     }
