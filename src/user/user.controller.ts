@@ -13,22 +13,28 @@ import { AuthGuard } from '@nestjs/passport';
 // import { LoginCredentials, RegistrationCredentials } from 'src/auth/authmodels';
 
 @Controller('users')
-@UseGuards(AuthGuard())
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @UseGuards(AuthGuard())
+  @Get('/:name')
+  getUser(@Param('name') name: string): Promise<User> {
+    return this.userService.findByUser(name);
+  }
+
+  @UseGuards(AuthGuard())
   @Get()
   getUsers(): Promise<User[]> {
     return this.userService.findAll();
   }
-  @Get(':id')
-  getUser(@Param('id') id: string): Promise<User> {
-    return this.userService.findById(id);
-  }
+
+  @UseGuards(AuthGuard())
   @Post('seedAll')
   seedAll(@Body('userData') userData: User[]): Promise<User[]> {
     return this.userService.seedAll(userData);
   }
+
+  @UseGuards(AuthGuard())
   @Delete(':id')
   deleteUser(@Param('id') id: string): Promise<string> {
     const userId = this.userService.remove(id);

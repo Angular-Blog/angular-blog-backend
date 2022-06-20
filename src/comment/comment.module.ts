@@ -6,9 +6,13 @@ import { CommentController } from './comment.controller';
 import { User } from '../user/user.model';
 import { Post } from '../post/post.model';
 import { CommentLike } from '../commentLike/commentLike.model';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
-  imports: [SequelizeModule.forFeature([Comment, Post, User, CommentLike])],
+  imports: [
+    SequelizeModule.forFeature([Comment, Post, User, CommentLike]),
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+  ],
   providers: [CommentService],
   controllers: [CommentController],
 })

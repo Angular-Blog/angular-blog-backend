@@ -16,19 +16,22 @@ export class UserService {
   ) {}
 
   async findAll(): Promise<User[]> {
-    return this.userModel.findAll();
+    return this.userModel.findAll({
+      attributes: { exclude: ['password'] },
+    });
   }
 
-  findById(id: string): Promise<User> {
+  findByUser(username: string): Promise<User> {
     return this.userModel.findOne({
       where: {
-        id,
+        username,
       },
       include: [
         { model: Post, as: 'posts' },
         { model: Post, as: 'likedPosts' },
         { model: Comment, as: 'likedComments' },
       ],
+      attributes: { exclude: ['password'] },
     });
   }
 
