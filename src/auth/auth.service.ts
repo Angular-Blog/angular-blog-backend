@@ -18,6 +18,7 @@ export class AuthService {
     const token = this._createToken(user);
     return {
       username: user.username,
+      userId: user.id,
       ...token,
     };
   }
@@ -27,6 +28,7 @@ export class AuthService {
     const token = this._createToken(user);
     return {
       username: user.username,
+      userId: user.id,
       ...token,
     };
   }
