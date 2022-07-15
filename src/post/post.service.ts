@@ -31,6 +31,15 @@ export class PostService {
     });
   }
 
+  async findByUser(userId: string): Promise<Post[]> {
+    return this.postModel.findAll({
+      where: {
+        userId,
+      },
+      include: [{ model: User, as: 'user' }],
+    });
+  }
+
   async remove(id: string): Promise<string> {
     try {
       const post = await this.postModel.findOne({

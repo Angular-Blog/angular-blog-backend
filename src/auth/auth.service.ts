@@ -18,6 +18,7 @@ export class AuthService {
     const token = this._createToken(user);
     return {
       username: user.username,
+      userId: user.id,
       ...token,
     };
   }
@@ -27,12 +28,13 @@ export class AuthService {
     const token = this._createToken(user);
     return {
       username: user.username,
+      userId: user.id,
       ...token,
     };
   }
 
-  private _createToken({ username }: any): any {
-    const user: JwtPayload = { username };
+  private _createToken({ username, id }: any): any {
+    const user: JwtPayload = { username, id };
     const token = this.jwtService.sign(user);
     return {
       expiresIn: process.env.EXPIRESIN,
@@ -41,7 +43,7 @@ export class AuthService {
   }
 
   async validateUser(payload: JwtPayload): Promise<User> {
-    const user = await this.userService.findByPayload(payload);
+    const user = await this.userService.findByPayload(payload.username);
     if (!user) {
       throw new HttpException('Invalid Token', HttpStatus.UNAUTHORIZED);
     }
