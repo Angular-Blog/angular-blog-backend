@@ -134,6 +134,15 @@ export class UserService {
     }
   }
 
+  async submitFollow(followerId: string, followingId: string): Promise<User> {
+    const follower = await this.userModel.findOne({
+      where: {
+        id: followerId,
+      },
+    });
+    return follower;
+  }
+
   async seedAll(data: User[]): Promise<User[]> {
     try {
       const userList = [];

@@ -9,6 +9,7 @@ import { Post } from '../post/post.model';
 import { Comment } from '../comment/comment.model';
 import { PostLike } from '../postLike/postLike.model';
 import { CommentLike } from '../commentLike/commentLike.model';
+import { UserFollower } from '../userFollower/userFollower.model';
 import { v4 as uuidv4 } from 'uuid';
 
 @Table
@@ -29,4 +30,8 @@ export class User extends Model {
   likedPosts: Post[];
   @BelongsToMany(() => Comment, () => CommentLike)
   likedComments: Comment[];
+  @BelongsToMany(() => User, () => UserFollower)
+  followers: User[];
+  @BelongsToMany(() => User, () => UserFollower)
+  following: User[];
 }
