@@ -36,7 +36,9 @@ export class PostService {
       where: {
         userId,
       },
-      include: [{ model: User, as: 'user' }],
+      include: [
+        { model: User, as: 'user', attributes: { exclude: ['password'] } },
+      ],
     });
   }
 

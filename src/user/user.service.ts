@@ -6,12 +6,15 @@ import { Comment } from '../comment/comment.model';
 import { Sequelize } from 'sequelize-typescript';
 import * as bcrypt from 'bcrypt';
 import { LoginCredentials, RegistrationCredentials } from 'src/auth/authmodels';
+import { UserFollower } from 'src/userFollower/userFollower.model';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User)
     private userModel: typeof User,
+    @InjectModel(UserFollower)
+    private userFollowerModel: typeof UserFollower,
     private sequelize: Sequelize,
   ) {}
 
@@ -134,13 +137,38 @@ export class UserService {
     }
   }
 
-  async submitFollow(followerId: string, followingId: string): Promise<User> {
-    const follower = await this.userModel.findOne({
-      where: {
-        id: followerId,
-      },
-    });
-    return follower;
+  async submitFollow(followerId: string, followingId: string): Promise<string> {
+    try {
+      const userFollowing = await this.userFollowerModel.findAll({
+        where: {
+          followerId,
+        },
+      });
+      let existingFollow = false;
+      userFollowing.forEach(async (pair) => {
+        if (pair.followingId == followingId) {
+          existingFollow = true;
+          await pair.destroy();
+        }
+      });
+      if (!existingFollow) {
+        await this.sequelize.transaction(async (t) => {
+          const transactionHost = { transaction: t };
+          await this.userFollowerModel.create(
+            {
+              followerId,
+              followingId,
+            },
+            transactionHost,
+          );
+        });
+        return `User ${followingId} followed by ${followerId}`;
+      } else {
+        return `User ${followingId} unfollowed by ${followerId}`;
+      }
+    } catch (error) {
+      throw error;
+    }
   }
 
   async seedAll(data: User[]): Promise<User[]> {

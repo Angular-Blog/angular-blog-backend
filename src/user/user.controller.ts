@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
@@ -26,6 +27,20 @@ export class UserController {
   @Get()
   getUsers(): Promise<User[]> {
     return this.userService.findAll();
+  }
+
+  @UseGuards(AuthGuard())
+  @Post('follow')
+  async submitFollow(
+    @Body('userId') followingId: string,
+    @Req() request: any,
+  ): Promise<string> {
+    try {
+      const followerId = request.user.dataValues.id;
+      return this.userService.submitFollow(followerId, followingId);
+    } catch (error) {
+      throw error;
+    }
   }
 
   @UseGuards(AuthGuard())
