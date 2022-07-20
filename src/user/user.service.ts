@@ -33,6 +33,16 @@ export class UserService {
         { model: Post, as: 'posts' },
         { model: Post, as: 'likedPosts' },
         { model: Comment, as: 'likedComments' },
+        {
+          model: User,
+          as: 'followers',
+          attributes: ['username', 'id'],
+        },
+        {
+          model: User,
+          as: 'following',
+          attributes: ['username', 'id'],
+        },
       ],
       attributes: { exclude: ['password'] },
     });
@@ -59,12 +69,21 @@ export class UserService {
     }
   }
 
-  async findByPayload(username: any): Promise<User> {
+  async findByPayload(username: string): Promise<User> {
     return await this.userModel.findOne({
       where: {
         username,
       },
     });
+  }
+
+  async getUsernameFromId(id: string): Promise<string> {
+    const user = await this.userModel.findOne({
+      where: {
+        id,
+      },
+    });
+    return user.username;
   }
 
   async remove(id: string): Promise<string> {

@@ -25,8 +25,10 @@ export class UserController {
 
   @UseGuards(AuthGuard())
   @Get()
-  getUsers(): Promise<User[]> {
-    return this.userService.findAll();
+  async getSelf(@Req() request: any): Promise<User> {
+    const userId = request.user.dataValues.id;
+    const username = await this.userService.getUsernameFromId(userId);
+    return this.userService.findByUser(username);
   }
 
   @UseGuards(AuthGuard())
