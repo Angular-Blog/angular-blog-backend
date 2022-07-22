@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
+  HttpStatus,
   Param,
   Post,
   Req,
@@ -18,17 +20,36 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @UseGuards(AuthGuard())
-  @Get('/:name')
-  getUser(@Param('name') name: string): Promise<User> {
-    return this.userService.findByUser(name);
+  @Get('name/:name')
+  async getUser(@Param('name') name: string): Promise<User> {
+    const user = await this.userService.findByUser(name);
+    if (user) {
+      return user;
+    } else {
+      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+    }
+  }
+
+  @UseGuards(AuthGuard())
+  @Get('/all')
+  async getUsers(): Promise<User[]> {
+    return await this.userService.findAll();
   }
 
   @UseGuards(AuthGuard())
   @Get()
   async getSelf(@Req() request: any): Promise<User> {
-    const userId = request.user.dataValues.id;
-    const username = await this.userService.getUsernameFromId(userId);
-    return this.userService.findByUser(username);
+    try {
+      const userId = request.user.dataValues.id;
+      const username = await this.userService.getUsernameFromId(userId);
+      if (username) {
+        return this.userService.findByUser(username);
+      } else {
+        throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+      }
+    } catch {
+      throw new HttpException('Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   @UseGuards(AuthGuard())

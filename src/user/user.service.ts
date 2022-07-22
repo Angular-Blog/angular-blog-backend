@@ -19,13 +19,29 @@ export class UserService {
   ) {}
 
   async findAll(): Promise<User[]> {
-    return this.userModel.findAll({
+    return await this.userModel.findAll({
       attributes: { exclude: ['password'] },
     });
   }
 
-  findByUser(username: string): Promise<User> {
-    return this.userModel.findOne({
+  async getUsersFromUserFollowersList(
+    idList: UserFollower[],
+    idType: string,
+  ): Promise<User[]> {
+    const userList = [];
+    for (let i = 0; i < idList.length; i++) {
+      const user = await this.userModel.findOne({
+        where: {
+          id: idList[i][idType],
+        },
+      });
+      userList.push(user);
+    }
+    return userList;
+  }
+
+  async findByUser(username: string): Promise<User> {
+    const user = await this.userModel.findOne({
       where: {
         username,
       },
@@ -33,19 +49,31 @@ export class UserService {
         { model: Post, as: 'posts' },
         { model: Post, as: 'likedPosts' },
         { model: Comment, as: 'likedComments' },
-        {
-          model: User,
-          as: 'followers',
-          attributes: ['username', 'id'],
-        },
-        {
-          model: User,
-          as: 'following',
-          attributes: ['username', 'id'],
-        },
       ],
       attributes: { exclude: ['password'] },
     });
+    const followerIds = await this.userFollowerModel.findAll({
+      where: {
+        followingId: user.id,
+      },
+      attributes: ['followerId'],
+    });
+    const followingIds = await this.userFollowerModel.findAll({
+      where: {
+        followerId: user.id,
+      },
+      attributes: ['followingId'],
+    });
+    user.following = await this.getUsersFromUserFollowersList(
+      followingIds,
+      'followingId',
+    );
+    user.followers = await this.getUsersFromUserFollowersList(
+      followerIds,
+      'followerId',
+    );
+    console.log(`USER: ${JSON.stringify(user.followers)}`);
+    return user;
   }
 
   async findByLogin(creds: LoginCredentials): Promise<User> {
@@ -158,13 +186,13 @@ export class UserService {
 
   async submitFollow(followerId: string, followingId: string): Promise<string> {
     try {
-      const userFollowing = await this.userFollowerModel.findAll({
+      const userFollower = await this.userFollowerModel.findAll({
         where: {
-          followerId,
+          followerId: followerId,
         },
       });
       let existingFollow = false;
-      userFollowing.forEach(async (pair) => {
+      userFollower.forEach(async (pair) => {
         if (pair.followingId == followingId) {
           existingFollow = true;
           await pair.destroy();
@@ -175,8 +203,8 @@ export class UserService {
           const transactionHost = { transaction: t };
           await this.userFollowerModel.create(
             {
-              followerId,
-              followingId,
+              followerId: followerId,
+              followingId: followingId,
             },
             transactionHost,
           );

@@ -30,8 +30,8 @@ export class User extends Model {
   likedPosts: Post[];
   @BelongsToMany(() => Comment, () => CommentLike)
   likedComments: Comment[];
-  @BelongsToMany(() => User, () => UserFollower)
+  @BelongsToMany(() => User, () => UserFollower, 'followingId')
   followers: User[];
-  @BelongsToMany(() => User, () => UserFollower)
+  @BelongsToMany(() => User, () => UserFollower, 'followerId')
   following: User[];
 }
