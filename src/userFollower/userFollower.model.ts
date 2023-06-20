@@ -3,10 +3,8 @@ import { User } from '../user/user.model';
 
 @Table
 export class UserFollower extends Model {
-  @ForeignKey(() => User)
-  @Column
+  @Column({ unique: false })
   followerId: string;
-  @ForeignKey(() => User)
-  @Column
+  @Column({ unique: false })
   followingId: string;
 }

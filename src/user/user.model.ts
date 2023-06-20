@@ -4,6 +4,7 @@ import {
   Model,
   HasMany,
   BelongsToMany,
+  ForeignKey,
 } from 'sequelize-typescript';
 import { Post } from '../post/post.model';
 import { Comment } from '../comment/comment.model';
@@ -30,8 +31,12 @@ export class User extends Model {
   likedPosts: Post[];
   @BelongsToMany(() => Comment, () => CommentLike)
   likedComments: Comment[];
-  @BelongsToMany(() => User, () => UserFollower, 'followingId')
-  followers: User[];
-  @BelongsToMany(() => User, () => UserFollower, 'followerId')
+  @BelongsToMany(() => User, () => UserFollower, 'followingId', 'followerId')
   following: User[];
+  @BelongsToMany(() => User, () => UserFollower, 'followerId', 'followingId')
+  followers: User[];
+  @HasMany(() => UserFollower, 'followingId')
+  userFollowers: User[];
+  @HasMany(() => UserFollower, 'followerId')
+  userFollowing: User[];
 }

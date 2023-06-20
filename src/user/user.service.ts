@@ -49,6 +49,18 @@ export class UserService {
         { model: Post, as: 'posts' },
         { model: Post, as: 'likedPosts' },
         { model: Comment, as: 'likedComments' },
+        {
+          model: User,
+          as: 'following',
+          attributes: ['id', 'username'],
+          through: { attributes: [] },
+        },
+        {
+          model: User,
+          as: 'followers',
+          attributes: ['id', 'username'],
+          through: { attributes: [] },
+        },
       ],
       attributes: { exclude: ['password'] },
     });
